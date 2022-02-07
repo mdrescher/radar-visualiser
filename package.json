@@ -1,0 +1,34 @@
+{
+  "name": "radar-visualiser",
+  "version": "0.0.1",
+  "description": "A project to open-source a generic, configurable, and re-usable library to visualise data in a radar format.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "test": "jest --config jestconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdrescher/radar-visualiser.git"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "author": "Michel Drescher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdrescher/radar-visualiser/issues"
+  },
+  "homepage": "https://github.com/mdrescher/radar-visualiser#readme",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "jest": "^27.5.0",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.3",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.5.5"
+  }
+}

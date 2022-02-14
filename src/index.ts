@@ -20,17 +20,18 @@ export const render = function(blips: Iterable<Blip>,
     // construct an options set
     let opts = options === undefined ? defaults : {...defaults, ...options}
     
-    const canvas2 = SVG().width('100%').height('100%').viewbox(-1000, -1000, 2000, 2000 )
-    canvas2.circle(100)
-    console.log()
-    console.log(canvas2.svg())
-    
-    // run the function
+    // start by creating the root SVG element
+    const svgElem = SVG().width('100%').height('100%').viewbox(-1000, -1000, 2000, 2000 )
+
+    svgElem.circle(100) // temporary, will be replaced by actual code
+
+    // run the function - currently a test function from the options.
+    // Will be removed and gradually replaced by actual code
     let result = ""
     for (let blip of blips) {
         result += opts.bloop(blip) + '\n'
     }
-    return result
+    return svgElem.svg()
 }
 
-render([])
+console.log(render([])) // this should be a test of sorts

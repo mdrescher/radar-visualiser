@@ -1,4 +1,5 @@
 import { Blip, Options } from '../types'
+import { sameRadii } from './functions/radii'
 
 // this will gradually be expanded to include all the default function.
 // they will NOT include styling; this must be done by the developer using CSS stylesheets.
@@ -9,8 +10,5 @@ export const defaults: Options = {
     ringStroke: 2,
     // the width of the segment names area. Required to calculate the radar size
     segmentName: 80,
-    // test function
-    bloop: (b: Blip) => {
-        return '' + b.id + ', ' + b.name
-    },
+    calcRadii: sameRadii,
 }

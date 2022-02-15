@@ -4,5 +4,8 @@ export type Blip = {
 }
 
 export type Options = {
-    bloop: (b: Blip) => void  // test function
+    diameter: number
+    ringStroke: number
+    segmentName: number
+    bloop: (b: Blip) => void // test function
 }

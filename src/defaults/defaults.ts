@@ -1,4 +1,4 @@
-import { Blip, Options } from './types'
+import { Blip, Options } from '../types'
 
 // this will gradually be expanded to include all the default function.
 // they will NOT include styling; this must be done by the developer using CSS stylesheets.

@@ -1,5 +1,5 @@
 import { defaults } from '../defaults'
-import { Blip, Options } from '../types'
+import { Blip, Options } from '../../types'
 
 const opts_disjunct = {
     c: 'c',

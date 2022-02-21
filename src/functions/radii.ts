@@ -1,4 +1,4 @@
-import { toRadian } from '../../util/math'
+import { toRadian } from '../util/math'
 
 //
 // calculate an array of radii for radar segment rings so that all ring arcs have the SAME THICKNESS.

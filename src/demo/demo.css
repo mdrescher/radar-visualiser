@@ -1,0 +1,61 @@
+/*
+ * Styling segments
+ */
+
+/* Styling all demarcating lines in a segment */
+.segment line {
+    stroke-width: 5;
+}
+/* Styling opening ("left") demarcating line lines in a segment */
+.segment line.open {
+    stroke: black;
+}
+/* Styling closing ("right") demarcating line lines in a segment */
+.segment line.close {
+    stroke: black;
+}
+/* sub segment lines */
+.segment line.sub {
+    stroke: black;
+    stroke-dasharray: 15 10;
+    stroke-width: 0.5;
+}
+
+/*
+ * Styling rings
+ */
+/* Styling all rings together */
+.ring path {
+    stroke: black;
+    stroke-width: 1;
+    fill: none;
+}
+/* Styling individual rings */
+.ring.ring-4 path {
+    fill: #eee;
+}
+.ring.ring-3 path {
+    fill: #dadada;
+}
+.ring.ring-2 path {
+    fill: #cacaca;
+}
+.ring.ring-1 path {
+    fill: #bababa;
+}
+.ring.ring-0 path {
+    fill: #aaaaaa;
+}
+
+/* Styling the segment label - all together for a uniform look */
+.segment text {
+    font-family: 'Verdana';
+    font-size: 40;
+    font-weight: bold;
+}
+/* in different colours */
+/* remember that in SVG text is treated as shapes, so use stroke and fill! */
+.segment.segment-0 text {
+    fill: red;
+    stroke: red;
+}

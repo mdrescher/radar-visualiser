@@ -8,6 +8,7 @@
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
         "lint": "tslint -p tsconfig.json",
         "test": "jest --config jestconfig.json",
+        "demo": "node lib/demo/demo.js",
         "run": "node lib/index.js"
     },
     "repository": {

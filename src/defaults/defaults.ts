@@ -1,14 +1,11 @@
 import { Blip, Options } from '../types'
-import { sameArea } from './functions/radii'
+import { sameArea } from '../functions/radii'
 
 export const defaults: Options = {
     diameter: 2000,
     ringStroke: 2,
-    label: {
-        font: 'Verdana',
-        size: 40,
-        offset: 20,
-        color: '#000000',
-    },
+    labelOffset: 20,
+    labelSize: 40,
+    // no subSegments in the defaults!
     calcRadii: sameArea,
 }

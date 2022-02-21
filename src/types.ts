@@ -26,15 +26,6 @@ export type calcRadiiFn = {
     (radius: number, numRings: number, numSegs: number): number[]
 }
 
-// styling information for the segment labels. These can't be set using CSS hence
-// they must be passed in here
-export type LabelOptions = {
-    font: string // the font (e.g., "Verdana") used for the segment label
-    size: number // the font size of the label.
-    offset: number // the label's offset from the last ring's outer edge
-    color: string // the color of the segment label
-}
-
 /**
  * A data structure used to pass in options for a flexible and customisable rendering
  * of the radar.
@@ -53,9 +44,12 @@ export type Options = {
     // the thickness (stroke) of the ring lines. The thicker the stroke, the smaller the
     // radar radius must be in order to avoid element overlap or clipping
     ringStroke: number
-    // styling information for the segment labels. These can't be set using CSS hence
-    // they must be passed in here
-    label: LabelOptions
+    // the offset of the label from the last ring's outer edge
+    labelOffset: number
+    // the size of the label relative to the entire SVG (as a unitless nummber)
+    labelSize: number
+    // the number of sub-segments per segments. (Optional)
+    subSegments?: number
     // the function calculating the radii for the radar. Use either of the supplied
     // functions, or write your own.
     calcRadii: calcRadiiFn

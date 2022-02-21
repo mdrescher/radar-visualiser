@@ -1,0 +1,62 @@
+<html><head><style>/*
+ * Styling segments
+ */
+
+/* Styling all demarcating lines in a segment */
+.segment line {
+    stroke-width: 5;
+}
+/* Styling opening ("left") demarcating line lines in a segment */
+.segment line.open {
+    stroke: black;
+}
+/* Styling closing ("right") demarcating line lines in a segment */
+.segment line.close {
+    stroke: black;
+}
+/* sub segment lines */
+.segment line.sub {
+    stroke: black;
+    stroke-dasharray: 15 10;
+    stroke-width: 0.5;
+}
+
+/*
+ * Styling rings
+ */
+/* Styling all rings together */
+.ring path {
+    stroke: black;
+    stroke-width: 1;
+    fill: none;
+}
+/* Styling individual rings */
+.ring.ring-4 path {
+    fill: #eee;
+}
+.ring.ring-3 path {
+    fill: #dadada;
+}
+.ring.ring-2 path {
+    fill: #cacaca;
+}
+.ring.ring-1 path {
+    fill: #bababa;
+}
+.ring.ring-0 path {
+    fill: #aaaaaa;
+}
+
+/* Styling the segment label - all together for a uniform look */
+.segment text {
+    font-family: 'Verdana';
+    font-size: 40;
+    font-weight: bold;
+}
+/* in different colours */
+/* remember that in SVG text is treated as shapes, so use stroke and fill! */
+.segment.segment-0 text {
+    fill: red;
+    stroke: red;
+}
+</style><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="100%" height="100%" viewBox="-1000 -1000 2000 2000"><g label="Segment 1" class="segment segment-0"><g class="ring ring-0"><path d="M0 0 A0 0 0 0 1 0 0 L162.4663657499607 93.79999999999997 A187.6 187.6 0 0 0 1.1487186976002173e-14 -187.6 Z"></path></g><g class="ring ring-1"><path d="M1.1487186976002173e-14 -187.6 A187.6 187.6 0 0 1 162.4663657499607 93.79999999999997 L324.9327314999214 187.59999999999994 A375.2 375.2 0 0 0 2.2974373952004346e-14 -375.2 Z"></path></g><g class="ring ring-2"><path d="M2.2974373952004346e-14 -375.2 A375.2 375.2 0 0 1 324.9327314999214 187.59999999999994 L487.39909724988206 281.39999999999986 A562.8 562.8 0 0 0 3.446156092800652e-14 -562.8 Z"></path></g><g class="ring ring-3"><path d="M3.446156092800652e-14 -562.8 A562.8 562.8 0 0 1 487.39909724988206 281.39999999999986 L649.8654629998427 375.1999999999999 A750.4 750.4 0 0 0 4.594874790400869e-14 -750.4 Z"></path></g><g class="ring ring-4"><path d="M4.594874790400869e-14 -750.4 A750.4 750.4 0 0 1 649.8654629998427 375.1999999999999 L812.3318287498035 468.99999999999983 A938 938 0 0 0 5.743593488001086e-14 -938 Z"></path></g><line x1="0" y1="0" x2="5.743593488001086e-14" y2="-938" class="main open"></line><line x1="0" y1="0" x2="602.934777885974" y2="-718.5496876456014" class="sub sub-0"></line><line x1="0" y1="0" x2="923.7496723254511" y2="-162.88199065158068" class="sub sub-1"></line><line x1="0" y1="0" x2="812.3318287498035" y2="468.99999999999983" class="main close"></line><text font-size="40" text-anchor="middle" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><textPath href="#SvgjsPath1000" startOffset="50%" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><tspan dy="-20">Segment 1</tspan></textPath></text></g><defs><path d="M5.743593488001086e-14 -938 A938 938 0 0 1 812.3318287498035 468.99999999999983 " id="SvgjsPath1000"></path><path d="M812.3318287498035 468.99999999999983 A938 938 0 0 1 -812.3318287498033 469.0000000000003 " id="SvgjsPath1001"></path><path d="M-812.3318287498033 469.0000000000003 A938 938 0 0 1 -1.7230780464003258e-13 -938 " id="SvgjsPath1002"></path></defs><g label="Segment 2" class="segment segment-1"><g class="ring ring-0"><path d="M0 0 A0 0 0 0 1 0 0 L-162.46636574996066 93.80000000000005 A187.6 187.6 0 0 0 162.4663657499607 93.79999999999997 Z"></path></g><g class="ring ring-1"><path d="M162.4663657499607 93.79999999999997 A187.6 187.6 0 0 1 -162.46636574996066 93.80000000000005 L-324.9327314999213 187.6000000000001 A375.2 375.2 0 0 0 324.9327314999214 187.59999999999994 Z"></path></g><g class="ring ring-2"><path d="M324.9327314999214 187.59999999999994 A375.2 375.2 0 0 1 -324.9327314999213 187.6000000000001 L-487.39909724988195 281.40000000000015 A562.8 562.8 0 0 0 487.39909724988206 281.39999999999986 Z"></path></g><g class="ring ring-3"><path d="M487.39909724988206 281.39999999999986 A562.8 562.8 0 0 1 -487.39909724988195 281.40000000000015 L-649.8654629998426 375.2000000000002 A750.4 750.4 0 0 0 649.8654629998427 375.1999999999999 Z"></path></g><g class="ring ring-4"><path d="M649.8654629998427 375.1999999999999 A750.4 750.4 0 0 1 -649.8654629998426 375.2000000000002 L-812.3318287498033 469.0000000000003 A938 938 0 0 0 812.3318287498035 468.99999999999983 Z"></path></g><line x1="0" y1="0" x2="812.3318287498035" y2="468.99999999999983" class="main open"></line><line x1="0" y1="0" x2="320.81489443947737" y2="881.431678297182" class="sub sub-0"></line><line x1="0" y1="0" x2="-320.81489443947686" y2="881.4316782971822" class="sub sub-1"></line><line x1="0" y1="0" x2="-812.3318287498033" y2="469.0000000000003" class="main close"></line><text font-size="40" text-anchor="middle" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><textPath href="#SvgjsPath1001" startOffset="50%" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><tspan dy="-20">Segment 2</tspan></textPath></text></g><g label="Segment 3" class="segment segment-2"><g class="ring ring-0"><path d="M0 0 A0 0 0 0 1 0 0 L-3.446156092800652e-14 -187.6 A187.6 187.6 0 0 0 -162.46636574996066 93.80000000000005 Z"></path></g><g class="ring ring-1"><path d="M-162.46636574996066 93.80000000000005 A187.6 187.6 0 0 1 -3.446156092800652e-14 -187.6 L-6.892312185601303e-14 -375.2 A375.2 375.2 0 0 0 -324.9327314999213 187.6000000000001 Z"></path></g><g class="ring ring-2"><path d="M-324.9327314999213 187.6000000000001 A375.2 375.2 0 0 1 -6.892312185601303e-14 -375.2 L-1.0338468278401955e-13 -562.8 A562.8 562.8 0 0 0 -487.39909724988195 281.40000000000015 Z"></path></g><g class="ring ring-3"><path d="M-487.39909724988195 281.40000000000015 A562.8 562.8 0 0 1 -1.0338468278401955e-13 -562.8 L-1.3784624371202607e-13 -750.4 A750.4 750.4 0 0 0 -649.8654629998426 375.2000000000002 Z"></path></g><g class="ring ring-4"><path d="M-649.8654629998426 375.2000000000002 A750.4 750.4 0 0 1 -1.3784624371202607e-13 -750.4 L-1.7230780464003258e-13 -938 A938 938 0 0 0 -812.3318287498033 469.0000000000003 Z"></path></g><line x1="0" y1="0" x2="-812.3318287498033" y2="469.0000000000003" class="main open"></line><line x1="0" y1="0" x2="-923.7496723254512" y2="-162.88199065158037" class="sub sub-0"></line><line x1="0" y1="0" x2="-602.934777885974" y2="-718.5496876456012" class="sub sub-1"></line><line x1="0" y1="0" x2="-1.7230780464003258e-13" y2="-938" class="main close"></line><text font-size="40" text-anchor="middle" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><textPath href="#SvgjsPath1002" startOffset="50%" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}"><tspan dy="-20">Segment 3</tspan></textPath></text></g></svg></body></html>

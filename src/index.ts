@@ -3,9 +3,8 @@ import { createSVGWindow } from 'svgdom'
 const { SVG, registerWindow } = require('@svgdotjs/svg.js') // I HATE this...
 
 import { calcAngles } from './util/math'
-import { Blip, LabelOptions, Options } from './types'
+import { Blip, Options } from './types'
 import { defaults } from './defaults/defaults'
-import { sameRadii } from './defaults/functions/radii'
 
 //
 // exposed API for the renderer
@@ -69,7 +68,7 @@ const constructRadar = function (segments: string[], rings: string[], opts: Opti
     // 1) calculate some base values
     //
     const radius =
-        (opts.diameter - 2 * opts.ringStroke - 2 * opts.label.offset - 2 * opts.label.size) / 2
+        (opts.diameter - 2 * opts.ringStroke - 2 * opts.labelOffset - 2 * opts.labelSize) / 2
     const numSegs = segments.length
     const numRings = rings.length
     const angles = calcAngles(numSegs)
@@ -116,25 +115,30 @@ const addSegment = function (
 ): void {
     // 1) create the segment's group
     const seg = root.group().attr({ label: name, class: `segment segment-${idx}` })
-    // 2) add the embracing lines
-    addLines(seg, angles[idx], angles[idx + 1], radii[radii.length - 1])
-
-    // TODO add here a hook to add "sub lines?"
-
-    // 3) add the rings
+    // 2) add the rings
     let last: any
     for (let i = 0; i < radii.length - 1; i++) {
         const ring = seg.group().attr({ class: `ring ring-${i}` })
         last = addRing(ring, angles[idx], angles[idx + 1], radii[i], radii[i + 1])
     }
+    // 3) add the segment lines
+    addSegmentLines(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], opts.subSegments)
+    // TODO add here a hook to add "sub lines?"
+
     // 4) add the segment name
-    addSegmentName(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], name, opts.label)
+    addSegmentName(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], name, opts)
 }
 
 //
 // add segment lines to the radar
 //
-const addLines = (svgElem: any, startA: number, endA: number, radius: number) => {
+const addSegmentLines = (
+    svgElem: any,
+    startA: number,
+    endA: number,
+    radius: number,
+    numSubSegs?: number
+) => {
     // 1.) "Left" and "Right" lines
     // lines always start at (0, 0).
     // SVG coordinate system is mirrored on x axis hence we need to rotate by 90 degree, i.e. PI/2
@@ -142,11 +146,22 @@ const addLines = (svgElem: any, startA: number, endA: number, radius: number) =>
     // "Left" line
     let endX = radius * Math.cos(startA - Math.PI / 2)
     let endY = radius * Math.sin(startA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'open' }).stroke({ color: '#000', width: 1 })
+    svgElem.line(0, 0, endX, endY).attr({ class: 'main open' })
+
+    // any subsegment lines, if any
+    if (numSubSegs && numSubSegs > 1) {
+        const offs = (endA - startA) / numSubSegs
+        for (let i = 0; i < numSubSegs - 1; i++) {
+            endX = radius * Math.cos(startA + offs * (i + 1) - Math.PI / 2)
+            endY = radius * Math.sin(startA + offs * (i + 1) - Math.PI / 2)
+            svgElem.line(0, 0, endX, endY).attr({ class: `sub sub-${i}` })
+        }
+    }
+
     // "Right" line
     endX = radius * Math.cos(endA - Math.PI / 2)
     endY = radius * Math.sin(endA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'close' }).stroke({ color: '#000', width: 1 })
+    svgElem.line(0, 0, endX, endY).attr({ class: 'main close' })
 }
 
 //
@@ -167,7 +182,7 @@ const addRing = function (root: any, startA: number, endA: number, startR: numbe
     // add the "upper" arc and close the path
     path += `${arcPath(startA, endR, 0)} Z`
     // add the path to the SVG
-    const ring = root.path(path).attr({ fill: 'none', stroke: '#000' })
+    const ring = root.path(path)
     return ring
 }
 
@@ -189,7 +204,7 @@ const addSegmentName = (
     endA: number,
     radius: number,
     name: string,
-    opts: LabelOptions
+    opts: Options
 ): void => {
     // need to recalculate the last arc path...
     let x = radius * Math.cos(startA - Math.PI / 2)
@@ -198,14 +213,8 @@ const addSegmentName = (
 
     // now add the text path to the segment group
     const text = root.text()
-    text.font({ family: opts.font, size: opts.size, weight: 'bold', anchor: 'middle' })
-    const tspan = text.tspan(name).dy(-1 * opts.offset)
+    text.font({ size: opts.labelSize, anchor: 'middle' })
+    const tspan = text.tspan(name).dy(-1 * opts.labelOffset)
     const textPath = text.path(path)
     textPath.attr({ startOffset: '50%' })
 }
-
-console.log(
-    render([], ['Segment 1', 'Segment 2', 'Segment 3'], ['Ring 1', 'Ring 2', 'Ring 3', 'Ring 4'], {
-        calcRadii: sameRadii,
-    })
-) // this should be a test of sorts

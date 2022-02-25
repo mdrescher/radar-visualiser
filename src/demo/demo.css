@@ -25,26 +25,27 @@
  * Styling rings
  */
 /* Styling all rings together */
-.ring path {
+.ring path.arc-inner,
+.ring path.arc-outer {
     stroke: black;
     stroke-width: 1;
     fill: none;
 }
 /* Styling individual rings */
-.ring.ring-4 path {
-    fill: #eee;
+.ring.ring-4 path.arc-stroke {
+    stroke: #eee;
 }
-.ring.ring-3 path {
-    fill: #dadada;
+.ring.ring-3 path.arc-stroke {
+    stroke: #dadada;
 }
-.ring.ring-2 path {
-    fill: #cacaca;
+.ring.ring-2 path.arc-stroke {
+    stroke: #cacaca;
 }
-.ring.ring-1 path {
-    fill: #bababa;
+.ring.ring-1 path.arc-stroke {
+    stroke: #bababa;
 }
-.ring.ring-0 path {
-    fill: #aaaaaa;
+.ring.ring-0 path.arc-stroke {
+    stroke: #aaaaaa;
 }
 
 /* Styling the segment label - all together for a uniform look */

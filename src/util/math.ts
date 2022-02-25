@@ -7,6 +7,12 @@ export type Coord = {
 }
 
 //
+// round a floating point number to the given number of decimals
+//
+export const roundDec = (f: number, d: number): number =>
+    Math.round(f * Math.pow(10, d)) / Math.pow(10, d)
+
+//
 // convert an angle and egrees into radians
 //
 export const toRadian = (angleDeg: number): number => (Math.PI * angleDeg) / 180
@@ -36,9 +42,11 @@ export const calcAngles = (numSegments: number): number[] => {
 // cartesian coordinates, rotated by -90 degrees (i.e. reference line is the y axis, not the x axis)
 // Returns an oject { x: number, y: number }
 //
-export function polar2cartesian(radius: number, angle: number): Coord {
+export function polar2cartesian(radius: number, angle: number, dec?: number): Coord {
+    let x = radius * Math.cos(angle - Math.PI / 2)
+    let y = radius * Math.sin(angle - Math.PI / 2)
     return {
-        x: radius * Math.cos(angle - Math.PI / 2),
-        y: radius * Math.sin(angle - Math.PI / 2),
+        x: dec ? roundDec(x, dec) : x,
+        y: dec ? roundDec(y, dec) : y,
     }
 }

@@ -1,7 +1,7 @@
 import { readFileSync, closeSync, openSync, writeSync } from 'fs'
 
 import { render } from '../index'
-import { sameArea, sameRadii } from '../functions/radii'
+import { sameArea, sameRadii, goldenRatioRadii } from '../functions/radii'
 
 const css = readFileSync('./src/demo/demo.css', 'utf8')
 console.log(css)
@@ -11,7 +11,7 @@ const radar: string = render(
     ['Ring 1', 'Ring 2', 'Ring 3', 'Ring 4', 'Ring 5'],
     {
         subSegments: 3,
-        calcRadii: sameRadii,
+        calcRadii: sameArea,
     }
 )
 

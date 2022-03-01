@@ -49,10 +49,15 @@
 }
 
 /* Styling the segment label - all together for a uniform look */
-.segment text {
+.segment text.label.label-seg {
     font-family: 'Verdana';
     font-size: 40;
     font-weight: bold;
+}
+/* Styling the segment label - all together for a uniform look */
+.segment text.label.label-sub {
+    font-family: 'Verdana';
+    font-size: 30;
 }
 /* in different colours */
 /* remember that in SVG text is treated as shapes, so use stroke and fill! */

@@ -1,17 +1,27 @@
 import { SVG } from '@svgdotjs/svg.js'
 
-import { Options } from '../types'
+import { Segment, Options } from '../types'
 import { calcAngles, polar2cartesian } from '../util/math'
 
 //
 // constructs the complete radar based on the given segments, rings, and options
 //
-export const constructRadar = function (segments: string[], rings: string[], opts: Options): any {
+export const constructRadar = function (
+    segments: Segment[] | string[],
+    rings: string[],
+    opts: Options
+): any {
     //
     // 1) calculate some base values
     //
-    const radius =
-        (opts.diameter - 2 * opts.ringStroke - 2 * opts.labelOffset - 2 * opts.labelSize) / 2
+    // There is always spacing for the segment labels
+    let labelSpacing = 2 * opts.labels.segmentOffset + 2 * opts.labels.segmentSize
+    if (typeof segments[0] === 'object') {
+        // an array of Segments -> make room for sub labels
+        labelSpacing += opts.labels.subSegmentOffset + 2 * opts.labels.subSegmentSize
+    }
+    const radius = (opts.diameter - 2 * opts.ringStroke - 2 * labelSpacing) / 2
+    // calculate the rest
     const numSegs = segments.length
     const numRings = rings.length
     const angles = calcAngles(numSegs)
@@ -40,7 +50,7 @@ export const constructRadar = function (segments: string[], rings: string[], opt
 
 const addSegment = function (
     root: any,
-    name: string,
+    segLabel: Segment | string,
     angles: number[],
     radii: number[],
     idx: number,
@@ -48,7 +58,7 @@ const addSegment = function (
 ): void {
     // 1) create the segment's group
     const seg = root.group().attr({
-        label: name,
+        label: typeof segLabel === 'string' ? segLabel : segLabel.name,
         class: `segment segment-${idx}`,
         'data-angle-start': `${angles[idx]}`,
         'data-angle-end': `${angles[idx + 1]}`,
@@ -63,11 +73,11 @@ const addSegment = function (
         addRing(ring, angles[idx], angles[idx + 1], radii[i], radii[i + 1])
     }
     // 3) add the segment lines
-    addSegmentLines(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], opts.subSegments)
+    addSegmentLines(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], segLabel)
     // TODO add here a hook to add "sub lines?"
 
     // 4) add the segment name
-    addSegmentName(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], name, opts)
+    addLabels(seg, segLabel, angles[idx], angles[idx + 1], radii[radii.length - 1], opts)
 }
 
 //
@@ -78,9 +88,9 @@ const addSegmentLines = (
     startA: number,
     endA: number,
     radius: number,
-    numSubSegs?: number
+    segLabel: Segment | string
 ) => {
-    // 1.) "Left" and "Right" lines
+    // 1.) "Left"  line
     // lines always start at (0, 0).
     // SVG coordinate system is mirrored on x axis hence we need to rotate by 90 degree, i.e. PI/2
     // to get the correct coordinates
@@ -89,8 +99,11 @@ const addSegmentLines = (
     let endY = radius * Math.sin(startA - Math.PI / 2)
     svgElem.line(0, 0, endX, endY).attr({ class: 'main open' })
 
-    // any subsegment lines, if any
-    if (numSubSegs && numSubSegs > 1) {
+    //
+    // 2.) add subSegment lines, if segLabel is of type object
+    //
+    if (typeof segLabel === 'object') {
+        const numSubSegs = segLabel.subSegments.length
         const offs = (endA - startA) / numSubSegs
         for (let i = 0; i < numSubSegs - 1; i++) {
             endX = radius * Math.cos(startA + offs * (i + 1) - Math.PI / 2)
@@ -99,7 +112,9 @@ const addSegmentLines = (
         }
     }
 
-    // "Right" line
+    //
+    // 3.) "Right" line
+    //
     endX = radius * Math.cos(endA - Math.PI / 2)
     endY = radius * Math.sin(endA - Math.PI / 2)
     svgElem.line(0, 0, endX, endY).attr({ class: 'main close' })
@@ -115,15 +130,6 @@ const addRing = function (
     startR: number,
     endR: number
 ): void {
-    // ORIGINAL
-    // <path d="M3.631077759471902e-14 -593 A593 593 0 0 1 513.5530644441722 296.4999999999999 L628.7344431475025 362.9999999999999 A726 726 0 0 0 4.445467880904892e-14 -726 Z"></path>
-    //
-    // TARGET
-    // <path d="M3.631077759471902e-14 -593 A593 593 0 0 1 513.5530644441722 296.4999999999999"></path>
-    // <line x1="513.5530644441722" y1="296.4999999999999" x2="628.7344431475025" y2="362.9999999999999"></line>
-    // <path d="M628.7344431475025 362.9999999999999 A726 726 0 0 0 4.445467880904892e-14 -726"></path>
-    // <line x1="4.445467880904892e-14" y1="-726" x2="3.631077759471902e-14" y2="-593"></line>
-
     // find the four coordinates for the ring
     const _1 = polar2cartesian(startR, startA)
     const _2 = polar2cartesian(startR, endA)
@@ -176,22 +182,55 @@ const arcPath = function (angle: number, radius: number, flag: number): string {
 //
 // Add the segment name to the segment
 //
-const addSegmentName = (
+const addLabels = (
     root: any,
+    segLabel: Segment | string,
     startA: number,
     endA: number,
     radius: number,
-    name: string,
     opts: Options
 ): void => {
     // need to recalculate the last arc path...
     const _1 = polar2cartesian(radius, startA)
     const _2 = polar2cartesian(radius, endA)
-    // now add the text path to the segment group
+    // a running offset
+    let offset = 0
+
+    //
+    // 1.) First construct a path we can re-use and add it to defs
+    //
+    const svg = root.root()
+    const arc = svg.defs().path(`M${_1.x} ${_1.y} A${radius} ${radius} 0 0 1 ${_2.x} ${_2.y}`)
+
+    //
+    // 2. Add the sub segment labels
+    //
+    if (typeof segLabel === 'object') {
+        offset += opts.labels.subSegmentOffset
+        // calculate the offset for each sub segment label
+        const step = 100 / segLabel.subSegments.length
+        let ofsA = step / 2
+        for (let i = 0; i < segLabel.subSegments.length; i++) {
+            const text = root.text()
+            text.tspan(segLabel.subSegments[i]).dy(-1 * offset)
+            text.attr({ class: 'label label-sub' })
+            text.font({ size: opts.labels.subSegmentSize, anchor: 'middle' })
+            text.path(arc).attr({ startOffset: `${ofsA}%` })
+            ofsA += step
+        }
+        // finally add the sub seg label height to the offset
+        offset += opts.labels.subSegmentSize
+    }
+    // TODO
+
+    //
+    // 2.) Now we add the segment label
+    //
+    offset += opts.labels.segmentOffset
+    const segmentLabel = typeof segLabel === 'string' ? segLabel : segLabel.name
     const text = root.text()
-    text.font({ size: opts.labelSize, anchor: 'middle' })
-    text.tspan(name).dy(-1 * opts.labelOffset)
-    text.path(`M${_1.x} ${_1.y} A${radius} ${radius} 0 0 1 ${_2.x} ${_2.y}`).attr({
-        startOffset: '50%',
-    })
+    text.tspan(segmentLabel).dy(-1 * offset)
+    text.attr({ class: 'label label-seg' })
+    text.font({ size: opts.labels.segmentSize, anchor: 'middle' })
+    text.path(arc).attr({ startOffset: '50%' })
 }

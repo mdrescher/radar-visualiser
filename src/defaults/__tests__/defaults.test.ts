@@ -22,8 +22,12 @@ test('Disjunct options', () => {
         JSON.stringify({
             diameter: 2000,
             ringStroke: 2,
-            labelOffset: 20,
-            labelSize: 40,
+            labels: {
+                segmentOffset: 20,
+                segmentSize: 40,
+                subSegmentOffset: 20,
+                subSegmentSize: 20,
+            },
             bloop: (b: Blip) => {
                 return '' + b.id + ', ' + b.name
             },
@@ -38,8 +42,12 @@ test('Overlapping options options', () => {
         JSON.stringify({
             diameter: 1,
             ringStroke: 2000,
-            labelOffset: 20,
-            labelSize: 40,
+            labels: {
+                segmentOffset: 20,
+                segmentSize: 40,
+                subSegmentOffset: 20,
+                subSegmentSize: 20,
+            },
             bloop: (b: Blip) => {
                 return '' + b.id + ', ' + b.name
             },

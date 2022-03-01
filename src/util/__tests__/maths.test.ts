@@ -34,5 +34,5 @@ test('polar2cartesian', () => {
     expect(polar2cartesian(100, toRadian(90), 2)).toEqual({ x: 100, y: 0 })
     expect(polar2cartesian(100, toRadian(180), 2)).toEqual({ x: 0, y: 100 })
     expect(polar2cartesian(100, toRadian(270), 2)).toEqual({ x: -100, y: 0 })
-    expect(polar2cartesian(100, toRadian(360), 2)).toEqual({ x: -0, y: -100 }) // -0 is due to rounding errors
+    expect(polar2cartesian(100, toRadian(360), 2)).toEqual({ x: 0, y: -100 }) // -0 is due to rounding errors
 })

@@ -2,7 +2,7 @@ import { isNode } from 'browser-or-node'
 import { createSVGWindow } from 'svgdom'
 const { registerWindow } = require('@svgdotjs/svg.js') // I HATE this...
 
-import { Blip, Options } from './types'
+import { Segment, Blip, Options } from './types'
 import { defaults } from './defaults/defaults'
 import { constructRadar } from './render/render'
 
@@ -11,7 +11,7 @@ import { constructRadar } from './render/render'
 //
 export const render = function (
     blips: Iterable<Blip>, // an iterator of blips
-    segments: string[], // the radar segments
+    segments: Segment[] | string[], // the radar segments
     rings: string[], // the radar rings
     options?: object // options for calculating aspects of the radar
     // TODO - add CSS options for self-contained SVG?
@@ -41,7 +41,7 @@ export const render = function (
 //
 const plotRadar = function (
     blips: Iterable<Blip>, // an iterator of blips
-    segments: string[], // the radar segments
+    segments: Segment[] | string[], // the radar segments
     rings: string[], // the radar rings
     opts: Options // options for calculating aspects of the radar
 ): string {

@@ -9,8 +9,11 @@ export type Coord = {
 //
 // round a floating point number to the given number of decimals
 //
-export const roundDec = (f: number, d: number): number =>
-    Math.round(f * Math.pow(10, d)) / Math.pow(10, d)
+export const roundDec = (f: number, d: number): number => {
+    let result = Math.round(f * Math.pow(10, d)) / Math.pow(10, d)
+    if (result === -0) result = 0
+    return result
+}
 
 //
 // convert an angle and egrees into radians

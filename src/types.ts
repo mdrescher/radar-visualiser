@@ -1,4 +1,18 @@
 /**
+ * A radar is made up of a number of segments. A segment MAY have a number of sub-segments.
+ * In that case, the system accepts Segment[] arrays as input.
+ * If subsegments are not used, use a string[] to declare the segments for the radar.
+ * Semantically, ['One', 'Two', 'Three'] and
+ * [{name: 'One', subSegments: []}, name: 'Two', subSegments: []}, name: 'Three', subSegments: []}]
+ * are equivalent.
+ * Note that segments may have different subsegments in names and numbers!
+ */
+export type Segment = {
+    name: string
+    subSegments: string[]
+}
+
+/**
  * A blip conveys core information about where and how the blip is visualised
  * in the radar.
  * A blip may also convey a payload - domain specific information that will be added
@@ -44,12 +58,17 @@ export type Options = {
     // the thickness (stroke) of the ring lines. The thicker the stroke, the smaller the
     // radar radius must be in order to avoid element overlap or clipping
     ringStroke: number
-    // the offset of the label from the last ring's outer edge
-    labelOffset: number
-    // the size of the label relative to the entire SVG (as a unitless nummber)
-    labelSize: number
-    // the number of sub-segments per segments. (Optional)
-    subSegments?: number
+    // label settings
+    labels: {
+        // the offset of the segment label from the last ring's outer edge (or the subsegment label)
+        segmentOffset: number
+        // the size of the label relative to the entire SVG (as a unitless nummber)
+        segmentSize: number
+        // sub-segment offset from the last ring's outer edge
+        subSegmentOffset: number
+        // the size of the label relative to the entire SVG (as a unitless nummber)
+        subSegmentSize: number
+    }
     // the function calculating the radii for the radar. Use either of the supplied
     // functions, or write your own.
     calcRadii: calcRadiiFn

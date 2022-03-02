@@ -69,6 +69,13 @@ export type Options = {
         // the size of the label relative to the entire SVG (as a unitless nummber)
         subSegmentSize: number
     }
+    // controlling extension of lines
+    lines: {
+        // Segment separation lines extend to the segment label
+        segment: true
+        // Sub-segment separation lines extend to the segment label
+        subSegment: true
+    }
     // the function calculating the radii for the radar. Use either of the supplied
     // functions, or write your own.
     calcRadii: calcRadiiFn

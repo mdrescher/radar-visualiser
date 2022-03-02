@@ -10,6 +10,10 @@ export const defaults: Options = {
         subSegmentOffset: 20,
         subSegmentSize: 20,
     },
+    lines: {
+        segment: true,
+        subSegment: true,
+    },
     // no subSegments in the defaults!
     calcRadii: sameArea,
 }

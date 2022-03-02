@@ -49,19 +49,6 @@ export const constructRadar = function (
     return svg
 }
 
-// add sub segment
-//  1. add the group
-//  2. add rings to group
-//  3. add lines to group
-//  4. add label to group
-
-// add segment
-//  1. add group
-//  2. If has sub segments
-//      2.1 add each sub segment
-//  3. add lines to group
-//  4. add label to group
-
 const addSegment = function (
     root: any,
     idx: number,
@@ -89,14 +76,10 @@ const addSegment = function (
     // 2.) Do we have sub segments?
     //
     if (hasSubs) {
-        console.log('Parent angles = ', startA, endA)
-        const subNames = (segment as Segment).subSegments
-        console.log('Sub segments = ' + subNames)
         // 2.1) Add sub segments
+        const subNames = (segment as Segment).subSegments
         const ofs = (endA - startA) / subNames.length
-        console.log('Subsegment offset = ', ofs)
         for (let i = 0; i < subNames.length; i++) {
-            console.log('subSeg angles = ', startA + i * ofs, startA + (i + 1) * ofs)
             addSubSegment(
                 group,
                 i,
@@ -117,7 +100,14 @@ const addSegment = function (
     //
     // 3.) Add the segment lines
     //
-    addLines(group, startA, endA, radii[radii.length - 1])
+    const labelOpts = opts.labels
+    const lineOpts = opts.lines
+    let radius = radii[radii.length - 1]
+    if (lineOpts.segment) {
+        radius += labelOpts.segmentOffset + labelOpts.segmentSize
+        if (hasSubs) radius += labelOpts.subSegmentOffset + labelOpts.subSegmentSize
+    }
+    addLines(group, startA, endA, radius)
 
     //
     // 4) Add the segment label
@@ -161,7 +151,13 @@ const addSubSegment = (
     //
     // 3.) Add lines
     //
-    addLines(group, startA, endA, radii[radii.length - 1])
+    const labelOpts = opts.labels
+    const lineOpts = opts.lines
+    let radius = radii[radii.length - 1]
+    if (lineOpts.subSegment) {
+        radius += labelOpts.subSegmentOffset + labelOpts.subSegmentSize
+    }
+    addLines(group, startA, endA, radius)
 
     //
     // 3.) Add label

@@ -5,7 +5,6 @@ import { sameArea, sameRadii, goldenRatioRadii } from '../functions/radii'
 import { Segment } from '../types'
 
 const css = readFileSync('./src/demo/demo.css', 'utf8')
-console.log(css)
 const radar: string = render(
     [],
     [
@@ -22,17 +21,14 @@ const radar: string = render(
             subSegmentOffset: 20,
             subSegmentSize: 30,
         },
+        lines: {
+            segment: false,
+            subSegment: false,
+        },
         calcRadii: sameArea,
     }
 )
 
-console.log(radar)
-
 const demo = openSync('./demo.html', 'w')
 writeSync(demo, `<html><head><style>${css}</style><body>${radar}</body></html>`)
 closeSync(demo)
-
-// console.log(
-// ) // this should be a test of sorts
-
-// console.log('')

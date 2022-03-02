@@ -14,8 +14,9 @@
 .segment line.close {
     stroke: black;
 }
-/* sub segment lines */
-.segment line.sub {
+/* sub segment lines getting identical styling */
+.segment .sub-segment line {
+    stroke-width: 2;
     stroke: black;
     stroke-dasharray: 15 10;
     stroke-width: 0.5;
@@ -49,13 +50,13 @@
 }
 
 /* Styling the segment label - all together for a uniform look */
-.segment text.label.label-seg {
+.segment text.label {
     font-family: 'Verdana';
     font-size: 40;
     font-weight: bold;
 }
-/* Styling the segment label - all together for a uniform look */
-.segment text.label.label-sub {
+/* Styling the sub-segment label - all together for a uniform look */
+.segment .sub-segment text.label {
     font-family: 'Verdana';
     font-size: 30;
 }

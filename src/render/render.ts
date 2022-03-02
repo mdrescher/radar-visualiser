@@ -39,7 +39,8 @@ export const constructRadar = function (
     // 3) construct each segment
     //
     for (let i = 0; i < segments.length; i++) {
-        addSegment(svg, segments[i], angles, radii, i, opts)
+        // add the actual segment
+        addSegment(svg, i, segments[i], angles[i], angles[i + 1], radii, opts)
     }
 
     //
@@ -48,76 +49,132 @@ export const constructRadar = function (
     return svg
 }
 
+// add sub segment
+//  1. add the group
+//  2. add rings to group
+//  3. add lines to group
+//  4. add label to group
+
+// add segment
+//  1. add group
+//  2. If has sub segments
+//      2.1 add each sub segment
+//  3. add lines to group
+//  4. add label to group
+
 const addSegment = function (
     root: any,
-    segLabel: Segment | string,
-    angles: number[],
-    radii: number[],
     idx: number,
-    opts: Options
-): void {
-    // 1) create the segment's group
-    const seg = root.group().attr({
-        label: typeof segLabel === 'string' ? segLabel : segLabel.name,
-        class: `segment segment-${idx}`,
-        'data-angle-start': `${angles[idx]}`,
-        'data-angle-end': `${angles[idx + 1]}`,
-    })
-    // 2) add the rings
-    for (let i = 0; i < radii.length - 1; i++) {
-        const ring = seg.group().attr({
-            class: `ring ring-${i}`,
-            'data-radius-inner': `${radii[i]}`,
-            'data-radius-outer': `${radii[i + 1]}`,
-        })
-        addRing(ring, angles[idx], angles[idx + 1], radii[i], radii[i + 1])
-    }
-    // 3) add the segment lines
-    addSegmentLines(seg, angles[idx], angles[idx + 1], radii[radii.length - 1], segLabel)
-    // TODO add here a hook to add "sub lines?"
-
-    // 4) add the segment name
-    addLabels(seg, segLabel, angles[idx], angles[idx + 1], radii[radii.length - 1], opts)
-}
-
-//
-// add segment lines to the radar
-//
-const addSegmentLines = (
-    svgElem: any,
+    segment: Segment | string,
     startA: number,
     endA: number,
-    radius: number,
-    segLabel: Segment | string
-) => {
-    // 1.) "Left"  line
-    // lines always start at (0, 0).
-    // SVG coordinate system is mirrored on x axis hence we need to rotate by 90 degree, i.e. PI/2
-    // to get the correct coordinates
-    // "Left" line
-    let endX = radius * Math.cos(startA - Math.PI / 2)
-    let endY = radius * Math.sin(startA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'main open' })
+    radii: number[],
+    opts: Options
+): void {
+    // do we have sub segments?
+    const hasSubs = typeof segment === 'object' ? true : false
+    let label = typeof segment === 'object' ? segment.name : segment
 
     //
-    // 2.) add subSegment lines, if segLabel is of type object
+    // 1.) add group
     //
-    if (typeof segLabel === 'object') {
-        const numSubSegs = segLabel.subSegments.length
-        const offs = (endA - startA) / numSubSegs
-        for (let i = 0; i < numSubSegs - 1; i++) {
-            endX = radius * Math.cos(startA + offs * (i + 1) - Math.PI / 2)
-            endY = radius * Math.sin(startA + offs * (i + 1) - Math.PI / 2)
-            svgElem.line(0, 0, endX, endY).attr({ class: `sub sub-${i}` })
+    const group = root.group().attr({
+        label: label,
+        class: `segment segment-${idx}`,
+        'data-angle-start': `${startA}`,
+        'data-angle-end': `${endA}`,
+    })
+
+    //
+    // 2.) Do we have sub segments?
+    //
+    if (hasSubs) {
+        console.log('Parent angles = ', startA, endA)
+        const subNames = (segment as Segment).subSegments
+        console.log('Sub segments = ' + subNames)
+        // 2.1) Add sub segments
+        const ofs = (endA - startA) / subNames.length
+        console.log('Subsegment offset = ', ofs)
+        for (let i = 0; i < subNames.length; i++) {
+            console.log('subSeg angles = ', startA + i * ofs, startA + (i + 1) * ofs)
+            addSubSegment(
+                group,
+                i,
+                subNames[i],
+                startA + i * ofs,
+                startA + (i + 1) * ofs,
+                radii,
+                opts
+            )
+        }
+    } else {
+        // 2.2) Add the rings
+        for (let i = 0; i < radii.length - 1; i++) {
+            addRing(group, i, startA, endA, radii[i], radii[i + 1])
         }
     }
 
     //
-    // 3.) "Right" line
+    // 3.) Add the segment lines
     //
-    endX = radius * Math.cos(endA - Math.PI / 2)
-    endY = radius * Math.sin(endA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'main close' })
+    addLines(group, startA, endA, radii[radii.length - 1])
+
+    //
+    // 4) Add the segment label
+    //
+    let size = opts.labels.segmentSize
+    let offset = opts.labels.segmentOffset
+    if (typeof segment === 'object')
+        offset += opts.labels.subSegmentOffset + opts.labels.subSegmentSize
+    addLabel(group, label, startA, endA, radii[radii.length - 1], offset, size)
+}
+
+//
+// Adds a sub segment to a given segment
+//
+const addSubSegment = (
+    root: any,
+    idx: number,
+    name: string,
+    startA: number,
+    endA: number,
+    radii: number[],
+    opts: Options
+) => {
+    //
+    // 1.) add group
+    //
+    const group = root.group().attr({
+        label: name,
+        class: `sub-segment sub-segment-${idx}`,
+        'data-angle-start': `${startA}`,
+        'data-angle-end': `${endA}`,
+    })
+
+    //
+    // 2.) Add rings
+    //
+    for (let i = 0; i < radii.length - 1; i++) {
+        addRing(group, i, startA, endA, radii[i], radii[i + 1])
+    }
+
+    //
+    // 3.) Add lines
+    //
+    addLines(group, startA, endA, radii[radii.length - 1])
+
+    //
+    // 3.) Add label
+    //
+    addLabel(
+        group,
+        name,
+        startA,
+        endA,
+        radii[radii.length - 1],
+        opts.labels.subSegmentOffset,
+        opts.labels.subSegmentSize
+    )
 }
 
 //
@@ -125,49 +182,82 @@ const addSegmentLines = (
 //
 const addRing = function (
     root: any,
+    idx: number,
     startA: number,
     endA: number,
     startR: number,
     endR: number
 ): void {
-    // find the four coordinates for the ring
+    //
+    // 1.) Add the ring's group
+    //
+    const ring = root.group().attr({
+        class: `ring ring-${idx}`,
+        'data-radius-inner': `${startA}`,
+        'data-radius-outer': `${endA}`,
+    })
+
+    //
+    // 2.) Find the four coordinates for the ring
+    //
     const _1 = polar2cartesian(startR, startA)
     const _2 = polar2cartesian(startR, endA)
     const _3 = polar2cartesian(endR, endA)
     const _4 = polar2cartesian(endR, startA)
 
-    // coordinates for the ring stroke
+    //
+    // 3.) Find coordinates for the ring stroke
+    //
     const w = endR - startR
     const r = startR + w / 2
     const _5 = polar2cartesian(r, startA)
     const _6 = polar2cartesian(r, endA)
 
-    // add the arc that "fills" the actual arc
-    root.path(`M ${_5.x} ${_5.y} A ${r} ${r} 0 0 1 ${_6.x} ${_6.y}`).attr({
+    //
+    // 4.) Add the ark that visually fills the ring
+    //
+    ring.path(`M ${_5.x} ${_5.y} A ${r} ${r} 0 0 1 ${_6.x} ${_6.y}`).attr({
         'stroke-width': `${w}`,
         fill: 'none',
         class: 'arc-stroke',
     })
 
-    // add inner arc
-    root.path(`M ${_1.x} ${_1.y} A ${startR} ${startR} 0 0 1 ${_2.x} ${_2.y}`).attr({
+    //
+    // 5. Add the outer path elments that demarcate the ring
+    //
+    ring.path(`M ${_1.x} ${_1.y} A ${startR} ${startR} 0 0 1 ${_2.x} ${_2.y}`).attr({
         class: 'arc-inner',
     })
-
-    // outer arc
-    root.path(`M ${_4.x} ${_4.y} A ${endR} ${endR} 0 0 1 ${_3.x} ${_3.y}`).attr({
+    ring.path(`M ${_4.x} ${_4.y} A ${endR} ${endR} 0 0 1 ${_3.x} ${_3.y}`).attr({
         class: 'arc-outer',
     })
-
-    // left line
-    root.line(_1.x, _1.y, _4.x, _4.y).attr({
+    ring.line(_1.x, _1.y, _4.x, _4.y).attr({
         class: 'left-line',
     })
-
-    // right line
-    root.line(_2.x, _2.y, _3.x, _3.y).attr({
+    ring.line(_2.x, _2.y, _3.x, _3.y).attr({
         class: 'right-line',
     })
+}
+
+//
+// add segment lines to the radar
+//
+const addLines = (svgElem: any, startA: number, endA: number, radius: number) => {
+    // 1.) "Left"  line
+    // lines always start at (0, 0).
+    // SVG coordinate system is mirrored on x axis hence we need to rotate by 90 degree, i.e. PI/2
+    // to get the correct coordinates
+    // "Left" line
+    let endX = radius * Math.cos(startA - Math.PI / 2)
+    let endY = radius * Math.sin(startA - Math.PI / 2)
+    svgElem.line(0, 0, endX, endY).attr({ class: 'open' })
+
+    //
+    // 2.) "Right" line
+    //
+    endX = radius * Math.cos(endA - Math.PI / 2)
+    endY = radius * Math.sin(endA - Math.PI / 2)
+    svgElem.line(0, 0, endX, endY).attr({ class: 'close' })
 }
 
 //
@@ -182,55 +272,31 @@ const arcPath = function (angle: number, radius: number, flag: number): string {
 //
 // Add the segment name to the segment
 //
-const addLabels = (
+const addLabel = (
     root: any,
-    segLabel: Segment | string,
+    name: string,
     startA: number,
     endA: number,
     radius: number,
-    opts: Options
+    offset: number,
+    size: number
 ): void => {
     // need to recalculate the last arc path...
     const _1 = polar2cartesian(radius, startA)
     const _2 = polar2cartesian(radius, endA)
-    // a running offset
-    let offset = 0
 
     //
-    // 1.) First construct a path we can re-use and add it to defs
+    // 1.) First construct a path we can reference for the label text
     //
     const svg = root.root()
     const arc = svg.defs().path(`M${_1.x} ${_1.y} A${radius} ${radius} 0 0 1 ${_2.x} ${_2.y}`)
 
     //
-    // 2. Add the sub segment labels
+    // 2.) COnstrunt the text element
     //
-    if (typeof segLabel === 'object') {
-        offset += opts.labels.subSegmentOffset
-        // calculate the offset for each sub segment label
-        const step = 100 / segLabel.subSegments.length
-        let ofsA = step / 2
-        for (let i = 0; i < segLabel.subSegments.length; i++) {
-            const text = root.text()
-            text.tspan(segLabel.subSegments[i]).dy(-1 * offset)
-            text.attr({ class: 'label label-sub' })
-            text.font({ size: opts.labels.subSegmentSize, anchor: 'middle' })
-            text.path(arc).attr({ startOffset: `${ofsA}%` })
-            ofsA += step
-        }
-        // finally add the sub seg label height to the offset
-        offset += opts.labels.subSegmentSize
-    }
-    // TODO
-
-    //
-    // 2.) Now we add the segment label
-    //
-    offset += opts.labels.segmentOffset
-    const segmentLabel = typeof segLabel === 'string' ? segLabel : segLabel.name
     const text = root.text()
-    text.tspan(segmentLabel).dy(-1 * offset)
-    text.attr({ class: 'label label-seg' })
-    text.font({ size: opts.labels.segmentSize, anchor: 'middle' })
+    text.tspan(name).dy(-1 * offset)
+    text.attr({ class: 'label' })
+    text.font({ size: size, anchor: 'middle' })
     text.path(arc).attr({ startOffset: '50%' })
 }

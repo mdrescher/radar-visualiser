@@ -1,5 +1,5 @@
-import { Options } from '../types'
-import { sameArea } from '../functions/radii'
+import { Options } from './types'
+import { sameArea } from './functions/radii'
 
 export const defaults: Options = {
     diameter: 2000,

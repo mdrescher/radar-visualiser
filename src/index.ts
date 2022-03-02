@@ -3,7 +3,7 @@ import { createSVGWindow } from 'svgdom'
 const { registerWindow } = require('@svgdotjs/svg.js') // I HATE this...
 
 import { Segment, Blip, Options } from './types'
-import { defaults } from './defaults/defaults'
+import { defaults } from './defaults'
 import { constructRadar } from './render/render'
 
 //

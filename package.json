@@ -2,7 +2,7 @@
     "name": "radar-visualiser",
     "version": "0.0.1",
     "description": "A project to open-source a generic, configurable, and re-usable library to visualise data in a radar format.",
-    "main": "index.js",
+    "main": "src/index.js",
     "scripts": {
         "build": "tsc",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",

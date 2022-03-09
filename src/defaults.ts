@@ -2,7 +2,9 @@ import { Options } from './types'
 import { sameArea } from './functions/radii'
 
 export const defaults: Options = {
-    diameter: 2000,
+    geometry: {
+        diameter: 2000,
+    },
     labels: {
         segmentOffset: 20,
         segmentSize: 40,

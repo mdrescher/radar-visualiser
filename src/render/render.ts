@@ -20,7 +20,7 @@ export const constructRadar = function (
         // an array of Segments -> make room for sub labels
         labelSpacing += opts.labels.subSegmentOffset + 2 * opts.labels.subSegmentSize
     }
-    const radius = (opts.diameter - 2 * labelSpacing) / 2
+    const radius = (opts.geometry.diameter - 2 * labelSpacing) / 2
     // calculate the rest
     const numSegs = segments.length
     const numRings = rings.length
@@ -33,7 +33,12 @@ export const constructRadar = function (
     const svg = SVG()
         .width('100%')
         .height('100%')
-        .viewbox(-opts.diameter / 2, -opts.diameter / 2, opts.diameter, opts.diameter)
+        .viewbox(
+            -opts.geometry.diameter / 2,
+            -opts.geometry.diameter / 2,
+            opts.geometry.diameter,
+            opts.geometry.diameter
+        )
 
     //
     // 3) construct each segment
@@ -46,7 +51,13 @@ export const constructRadar = function (
     //
     // 4) return the SVG element
     //
-    return svg
+    return {
+        svg,
+        geom: {
+            radii,
+            angles,
+        },
+    }
 }
 
 const addSegment = function (

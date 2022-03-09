@@ -3,7 +3,6 @@ import { sameArea } from './functions/radii'
 
 export const defaults: Options = {
     diameter: 2000,
-    ringStroke: 2,
     labels: {
         segmentOffset: 20,
         segmentSize: 40,

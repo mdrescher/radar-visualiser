@@ -55,9 +55,6 @@ export type Options = {
     // the diameter of the radar including the sector labels.
     // Used to set the SVG viewport, and to calculate the actual radius of the radar
     diameter: number
-    // the thickness (stroke) of the ring lines. The thicker the stroke, the smaller the
-    // radar radius must be in order to avoid element overlap or clipping
-    ringStroke: number
     // label settings
     labels: {
         // the offset of the segment label from the last ring's outer edge (or the subsegment label)

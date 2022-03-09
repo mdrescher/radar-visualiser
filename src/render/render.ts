@@ -20,7 +20,7 @@ export const constructRadar = function (
         // an array of Segments -> make room for sub labels
         labelSpacing += opts.labels.subSegmentOffset + 2 * opts.labels.subSegmentSize
     }
-    const radius = (opts.diameter - 2 * opts.ringStroke - 2 * labelSpacing) / 2
+    const radius = (opts.diameter - 2 * labelSpacing) / 2
     // calculate the rest
     const numSegs = segments.length
     const numRings = rings.length

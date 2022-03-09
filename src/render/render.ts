@@ -45,25 +45,20 @@ export const constructRadar = function (
     //
     for (let i = 0; i < segments.length; i++) {
         // add the actual segment
-        addSegment(svg, i, segments[i], angles[i], angles[i + 1], radii, opts)
+        addSegment(svg, i, segments[i], rings, angles[i], angles[i + 1], radii, opts)
     }
 
     //
     // 4) return the SVG element
     //
-    return {
-        svg,
-        geom: {
-            radii,
-            angles,
-        },
-    }
+    return svg
 }
 
 const addSegment = function (
     root: any,
     idx: number,
     segment: Segment | string,
+    rings: string[],
     startA: number,
     endA: number,
     radii: number[],
@@ -95,6 +90,7 @@ const addSegment = function (
                 group,
                 i,
                 subNames[i],
+                rings,
                 startA + i * ofs,
                 startA + (i + 1) * ofs,
                 radii,
@@ -104,7 +100,7 @@ const addSegment = function (
     } else {
         // 2.2) Add the rings
         for (let i = 0; i < radii.length - 1; i++) {
-            addRing(group, i, startA, endA, radii[i], radii[i + 1])
+            addRing(group, i, rings[i], startA, endA, radii[i], radii[i + 1])
         }
     }
 
@@ -137,6 +133,7 @@ const addSubSegment = (
     root: any,
     idx: number,
     name: string,
+    rings: string[],
     startA: number,
     endA: number,
     radii: number[],
@@ -156,7 +153,7 @@ const addSubSegment = (
     // 2.) Add rings
     //
     for (let i = 0; i < radii.length - 1; i++) {
-        addRing(group, i, startA, endA, radii[i], radii[i + 1])
+        addRing(group, i, rings[i], startA, endA, radii[i], radii[i + 1])
     }
 
     //
@@ -190,6 +187,7 @@ const addSubSegment = (
 const addRing = function (
     root: any,
     idx: number,
+    name: string,
     startA: number,
     endA: number,
     startR: number,
@@ -199,6 +197,7 @@ const addRing = function (
     // 1.) Add the ring's group
     //
     const ring = root.group().attr({
+        label: name,
         class: `ring ring-${idx}`,
         'data-radius-inner': `${startA}`,
         'data-radius-outer': `${endA}`,

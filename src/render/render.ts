@@ -1,4 +1,4 @@
-import { SVG } from '@svgdotjs/svg.js'
+import { SVG, Svg } from '@svgdotjs/svg.js'
 
 import { Segment, Options } from '../types'
 import { calcAngles, polar2cartesian } from '../util/math'
@@ -10,7 +10,7 @@ export const constructRadar = function (
     segments: Segment[] | string[],
     rings: string[],
     opts: Options
-): any {
+): Svg {
     //
     // 1) calculate some base values
     //
@@ -20,25 +20,26 @@ export const constructRadar = function (
         // an array of Segments -> make room for sub labels
         labelSpacing += opts.labels.subSegmentOffset + 2 * opts.labels.subSegmentSize
     }
-    const radius = (opts.geometry.diameter - 2 * labelSpacing) / 2
+    const radius = (opts.diameter - 2 * labelSpacing) / 2
     // calculate the rest
     const numSegs = segments.length
     const numRings = rings.length
     const angles = calcAngles(numSegs)
     const radii = opts.calcRadii(radius, numRings, numSegs)
+    // adjust blip diameter if need be
+    const minDiameter = radii.reduce((p: number, c: number, i: number, r: number[]): number => {
+        if (p === 0) return c - r[i - 1]
+        return Math.min(p, c - r[i - 1])
+    })
+    opts.blip.dia = Math.min(minDiameter * 0.45, opts.blip.dia)
 
     //
     // 2) the root svg element
     //
-    const svg = SVG()
+    const svg: Svg = SVG()
         .width('100%')
         .height('100%')
-        .viewbox(
-            -opts.geometry.diameter / 2,
-            -opts.geometry.diameter / 2,
-            opts.geometry.diameter,
-            opts.geometry.diameter
-        )
+        .viewbox(-opts.diameter / 2, -opts.diameter / 2, opts.diameter, opts.diameter)
 
     //
     // 3) construct each segment
@@ -114,7 +115,7 @@ const addSegment = function (
         radius += labelOpts.segmentOffset + labelOpts.segmentSize
         if (hasSubs) radius += labelOpts.subSegmentOffset + labelOpts.subSegmentSize
     }
-    addLines(group, startA, endA, radius)
+    addLines(group, startA, endA, radius, opts.lines.segmentStroke)
 
     //
     // 4) Add the segment label
@@ -165,7 +166,7 @@ const addSubSegment = (
     if (lineOpts.subSegment) {
         radius += labelOpts.subSegmentOffset + labelOpts.subSegmentSize
     }
-    addLines(group, startA, endA, radius)
+    addLines(group, startA, endA, radius, opts.lines.subSegmentStroke)
 
     //
     // 3.) Add label
@@ -199,8 +200,8 @@ const addRing = function (
     const ring = root.group().attr({
         label: name,
         class: `ring ring-${idx}`,
-        'data-radius-inner': `${startA}`,
-        'data-radius-outer': `${endA}`,
+        'data-radius-inner': `${startR}`,
+        'data-radius-outer': `${endR}`,
     })
 
     //
@@ -248,7 +249,7 @@ const addRing = function (
 //
 // add segment lines to the radar
 //
-const addLines = (svgElem: any, startA: number, endA: number, radius: number) => {
+const addLines = (svgElem: any, startA: number, endA: number, radius: number, stroke: number) => {
     // 1.) "Left"  line
     // lines always start at (0, 0).
     // SVG coordinate system is mirrored on x axis hence we need to rotate by 90 degree, i.e. PI/2
@@ -256,23 +257,14 @@ const addLines = (svgElem: any, startA: number, endA: number, radius: number) =>
     // "Left" line
     let endX = radius * Math.cos(startA - Math.PI / 2)
     let endY = radius * Math.sin(startA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'open' })
+    svgElem.line(0, 0, endX, endY).attr({ class: 'open', 'stroke-width': stroke })
 
     //
     // 2.) "Right" line
     //
     endX = radius * Math.cos(endA - Math.PI / 2)
     endY = radius * Math.sin(endA - Math.PI / 2)
-    svgElem.line(0, 0, endX, endY).attr({ class: 'close' })
-}
-
-//
-// calculate the arc path for a ring, and for the segment label
-//
-const arcPath = function (angle: number, radius: number, flag: number): string {
-    const x = radius * Math.cos(angle - Math.PI / 2)
-    const y = radius * Math.sin(angle - Math.PI / 2)
-    return `A${radius} ${radius} 0 0 ${flag} ${x} ${y}`
+    svgElem.line(0, 0, endX, endY).attr({ class: 'close', 'stroke-width': stroke })
 }
 
 //

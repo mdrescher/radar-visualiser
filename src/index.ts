@@ -5,6 +5,8 @@ const { registerWindow } = require('@svgdotjs/svg.js') // I HATE this...
 import { Segment, Blip, Options } from './types'
 import { defaults } from './defaults'
 import { constructRadar } from './render/render'
+import { placeBlips } from './render/blipPlacer'
+import { deepMerge } from './util/util'
 
 //
 // exposed API for the renderer
@@ -22,7 +24,7 @@ export const render = function (
     }
 
     // construct an options set
-    let opts: Options = options === undefined ? defaults : { ...defaults, ...options }
+    let opts: Options = options === undefined ? defaults : deepMerge(defaults, options)
 
     // if we run in a node env we need to register a fake browser window before we go ahead
     if (isNode) {
@@ -48,14 +50,15 @@ const plotRadar = function (
     //
     // 1) Create the complete radar visual
     //
-    const root = constructRadar(segments, rings, opts)
+    const radar = constructRadar(segments, rings, opts)
 
-    // run the function - currently a test function from the options.
-    // Will be removed and gradually replaced by actual code
-    let result = ''
-    for (let blip of blips) {
-        // result += opts.bloop(blip) + '\n'
-    }
+    //
+    // 2) Place the blips in the radar
+    //
+    placeBlips(blips, radar, opts)
 
-    return root.svg()
+    //
+    // 3) Return the radar as SVG
+    //
+    return radar.svg()
 }

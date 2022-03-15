@@ -10,7 +10,10 @@
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
         "lint": "tslint -p tsconfig.json",
         "test": "jest --config jestconfig.json",
-        "prepublish": "tsc"
+        "prepublish": "tsc",
+        "preversion": "jest --config jestconfig.json",
+        "version": "npm run build",
+        "postversion": "git push && git push --tags"
     },
     "repository": {
         "type": "git",
@@ -20,6 +23,12 @@
         "lib/**/*"
     ],
     "author": "Michel Drescher",
+    "maintainers": [
+        {
+            "name": "Michel Drescher",
+            "email": "Michel.Drescher@gmail.com"
+        }
+    ],
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/mdrescher/radar-visualiser/issues"

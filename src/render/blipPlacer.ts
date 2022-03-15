@@ -29,7 +29,6 @@ export const placeBlips = (blips: Iterable<Blip>, radar: Svg, opts: Options) => 
             opts.blipSkipped(blip, Reasons['No suitable coordinates found'])
             return
         }
-        console.log(`--> ${blip.id}-${blip.name} --> (${coords.x},${coords.y})`)
 
         // 1.3) draw the blip
         constructBlip(ringNode, blip, coords, opts)

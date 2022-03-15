@@ -213,4 +213,9 @@ const constructBlip = (ringNode: any, blip: Blip, coords: Coord, opts: Options):
         })
         .cx(coords.x)
         .cy(coords.y)
+
+    // 4) Add the payload as a data attribute
+    if (blip.payload) {
+        blipGroup.data('payload', JSON.stringify(blip.payload))
+    }
 }

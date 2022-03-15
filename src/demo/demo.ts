@@ -13,6 +13,12 @@ const radar: string = render(
             segment: 'Segment 1',
             subsegment: 'Sub 1',
             ring: 'Ring 1',
+            payload: {
+                mrl: 10,
+                trl: 20,
+                score: 50,
+                descr: 'Some text',
+            },
         },
         {
             id: 2,
